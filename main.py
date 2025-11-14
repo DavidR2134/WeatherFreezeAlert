@@ -13,11 +13,17 @@ def get_weather_data():
 
     return r.json()
 
+def check_for_freezing(json_data):
+    for num, t in enumerate(json_data["hourly"]["temperature_2m"]):
+        if float(t) <= 5:
+            return get_corresponding_time(num, json_data)
+        
+    return None
+
+def get_corresponding_time(temp_index, json_data):
+    return json_data["hourly"]["time"][temp_index] 
 
 if __name__ == "__main__":
-    info = get_weather_data()
-    for t in info["hourly"]["temperature_2m"]:
-        if t <= 5:
-            print(f"WEATHER WARNING -> {t} at {info["hourly"]["time"][info["hourly"]["temperature_2m"].index(t)]}")
-        else:
-            print(f"Normal weather -> {t} at {info["hourly"]["time"][info["hourly"]["temperature_2m"].index(t)]}")
+    json_info = get_weather_data()
+    print(check_for_freezing(json_info))
+
