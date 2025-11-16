@@ -55,7 +55,7 @@ def send_email(time, temp):
 
 
 def convert_celsius_to_fahrenheit(temperature):
-    pass
+    return (temperature * 9/5) + 32
 
 
 if __name__ == "__main__":
