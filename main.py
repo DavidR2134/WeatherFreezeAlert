@@ -2,18 +2,21 @@ import os
 import requests
 import smtplib
 from email.mime.text import MIMEText
+from datetime import datetime
 
 def get_weather_data():
     #Insert weather API url as environment variable in ~/.bashrc if on Linux -- weather info from https://open-meteo.com/
     url = os.getenv("WEATHER_API")
+    try:
+        r = requests.get(url)
+        if r.status_code != 200:
+            print("Error fetching weather info")
+            return None
 
-    r = requests.get(url)
-    if r.status_code != 200:
-        print("Error fetching weather info")
-        return None
-
-    return r.json()
-
+        return r.json()
+    except:
+        print(f"Error occured.")
+        exit(-1)
 
 def check_for_freezing(json_data):
     for num, t in enumerate(json_data["hourly"]["temperature_2m"]):
@@ -34,7 +37,7 @@ def send_email(time, temp):
     msg = MIMEText(f'''
     Hey!
 
-    A critical temperature of {temp} degrees Celsius is scheduled for {time}!
+    A critical temperature of {convert_celsius_to_fahrenheit(temp)} degrees Fahrenheit is scheduled for {convert_iso_to_datetime(time)}!
     Please do not forget to cover Oliver prior to the scheduled time provided.
 
     Thanks!
@@ -58,8 +61,13 @@ def convert_celsius_to_fahrenheit(temperature):
     return (temperature * 9/5) + 32
 
 
+def convert_iso_to_datetime(date_ISO):
+    dt = datetime.fromisoformat(date_ISO) 
+    return dt.strftime("%m/%d/%Y %I:%M %p")
+
 if __name__ == "__main__":
     json_info = get_weather_data()
+    
     freeze_info = check_for_freezing(json_info)
 
     if freeze_info:
