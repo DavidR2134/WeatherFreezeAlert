@@ -54,6 +54,10 @@ def send_email(time, temp):
     print("Email sent successfully")
 
 
+def convert_celsius_to_fahrenheit(temperature):
+    return (temperature * 9/5) + 32
+
+
 if __name__ == "__main__":
     json_info = get_weather_data()
     freeze_info = check_for_freezing(json_info)
